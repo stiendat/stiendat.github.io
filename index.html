@@ -1,441 +1,858 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <title>Bùi Tiến Đạt</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-    crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="style.css" />
+  <title>Dave Bui — Portfolio</title>
+  <style>
+    :root {
+      --bg: #050a0f;
+      --bg2: #0a1520;
+      --accent: #00d4ff;
+      --accent2: #0066ff;
+      --accent3: #7b2fff;
+      --text: #e0eaf5;
+      --muted: #6a8aaa;
+      --card: rgba(10,25,45,0.85);
+      --border: rgba(0,212,255,0.15);
+      --glow: 0 0 20px rgba(0,212,255,0.25);
+      --sidebar-w: 260px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS BACKGROUND ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: rgba(5,10,20,0.92);
+      border-right: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      z-index: 100;
+      box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+    }
+
+    .avatar-ring {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .avatar-ring img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--bg);
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar-name {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 0.3rem;
+    }
+    .sidebar-title {
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .sidebar-links {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .sidebar-links a {
+      color: var(--muted);
+      transition: color 0.2s;
+      font-size: 1rem;
+    }
+    .sidebar-links a:hover { color: var(--accent); }
+
+    .sidebar-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 1.2rem;
+    }
+
+    nav { width: 100%; }
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 600;
+      transition: all 0.2s;
+      position: relative;
+    }
+    nav a::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%) scaleY(0);
+      width: 3px; height: 60%;
+      border-radius: 2px;
+      background: var(--accent);
+      transition: transform 0.2s;
+    }
+    nav a:hover, nav a.active {
+      color: var(--accent);
+      background: rgba(0,212,255,0.07);
+    }
+    nav a:hover::before, nav a.active::before { transform: translateY(-50%) scaleY(1); }
+
+    nav a svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 4rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -200px; top: 50%;
+      transform: translateY(-50%);
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,102,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.2s;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.4s;
+      background: linear-gradient(135deg, #ffffff 30%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      color: var(--muted);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.6s;
+    }
+    .hero-sub span { color: var(--accent2); font-weight: 600; }
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.8s;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.8rem;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.25s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent2), var(--accent3));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(0,102,255,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,102,255,0.5); }
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent); background: rgba(0,212,255,0.07); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 2.5rem;
+      position: relative;
+      display: inline-block;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px; left: 0;
+      width: 40px; height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 3rem;
+      max-width: 700px;
+      margin-bottom: 2rem;
+    }
+    .about-item { display: flex; gap: 0.75rem; align-items: flex-start; }
+    .about-item .lbl { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; padding-top: 2px; }
+    .about-item .val { color: var(--text); font-weight: 500; }
+    .about-summary {
+      max-width: 720px;
+      color: var(--muted);
+      line-height: 1.8;
+      border-left: 3px solid var(--accent);
+      padding-left: 1.2rem;
+    }
+
+    /* ── EDUCATION ── */
+    .edu-list { display: flex; flex-direction: column; gap: 1.2rem; max-width: 780px; }
+    .edu-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .edu-card:hover { border-color: rgba(0,212,255,0.4); box-shadow: var(--glow); }
+    .edu-year {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      letter-spacing: 0.05em;
+      padding-top: 3px;
+      min-width: 90px;
+    }
+    .edu-info h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .edu-info p  { font-size: 0.82rem; color: var(--muted); }
+
+    /* ── SKILLS ── */
+    .skills-grid { display: flex; flex-direction: column; gap: 1.2rem; max-width: 860px; }
+    .skill-group { }
+    .skill-group-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tag {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.78rem;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .tag:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.07); }
+
+    /* ── WORK HISTORY ── */
+    .timeline { position: relative; max-width: 820px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent3), transparent);
+    }
+    .tl-item {
+      padding-left: 2rem;
+      padding-bottom: 3rem;
+      position: relative;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .tl-item.visible { opacity: 1; transform: none; }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -5px; top: 6px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .tl-period {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .tl-role { font-size: 1rem; font-weight: 700; margin-bottom: 0.15rem; }
+    .tl-company { font-size: 0.82rem; color: var(--accent2); margin-bottom: 0.75rem; font-weight: 500; }
+    .tl-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .tl-bullets li {
+      font-size: 0.84rem;
+      color: var(--muted);
+      padding-left: 1.1rem;
+      position: relative;
+    }
+    .tl-bullets li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.7rem;
+      top: 2px;
+    }
+    .tl-ref {
+      margin-top: 0.6rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── LANGUAGE ── */
+    .lang-list { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .lang-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem 2rem;
+      text-align: center;
+      transition: all 0.2s;
+      min-width: 130px;
+    }
+    .lang-card:hover { border-color: var(--accent); box-shadow: var(--glow); }
+    .lang-flag { font-size: 2rem; margin-bottom: 0.4rem; }
+    .lang-name { font-weight: 700; font-size: 0.9rem; }
+    .lang-level { font-size: 0.72rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.2rem; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 3px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      :root { --sidebar-w: 0px; }
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+      .sidebar.open { transform: translateX(0); --sidebar-w: 260px; }
+      .mobile-menu-btn {
+        display: flex;
+        position: fixed;
+        top: 1rem; left: 1rem;
+        z-index: 200;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.5rem;
+        cursor: pointer;
+        color: var(--text);
+      }
+      .hero, section { padding: 3rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 901px) {
+      .mobile-menu-btn { display: none; }
+    }
+  </style>
 </head>
+<body>
 
-<body class="scrollbar">
-  <div class="
-        fixed-top
-        d-flex
-        flex-column flex-shrink-0
-        p-0
-        bg-blue-600
-        h-100
-        pt-5
-        sidebar
-      ">
-    <div class="ava-img mb-3 mx-auto"></div>
-    <div class="w-100 text-center mb-3 profile-name">
-      <h2 class="text-light">Bùi Tiến Đạt</h2>
-    </div>
-    <div class="
-          bg-light
-          p-1
-          rounded-pill
-          text-center
-          mx-auto
-          mb-4
-          px-2
-          profile-badge
-        " style="width: 200px">
-      <span class="fw-bold"> Kỹ sư hệ thống </span>
-    </div>
-    <div class="text-center profile-link">
-      <a href="https://facebook.com/stiendat" class="me-3 text-decoration-none">
-        <i class="fab fa-facebook-square fa-lg text-light"></i>
-      </a>
-      <a href="https://github.com/stiendat" class="me-3 text-decoration-none">
-        <i class="fab fa-github-square fa-lg text-light"></i>
-      </a>
-      <a href="mailto:stiendat1998@gmail.com" class="me-3 text-decoration-none">
-        <i class="fas fa-envelope-square fa-lg text-light"></i>
-      </a>
-      <a href="tel:+84837525388" class="text-decoration-none">
-        <i class="fas fa-sms fa-lg text-light"></i>
-      </a>
-    </div>
-    <hr class="text-light mb-0" />
-    <div class="nav-wrapper bg-dark" style="flex: 1">
-      <ul class="nav nav-pills flex-column">
-        <li class="nav-item px-3 py-2 bg-dark">
-          <a href="#welcome" class="
-                d-flex
-                nav-link
-                link-light
-                justify-content-between
-                align-items-center
-              ">
-            <i class="fas fa-home fa-lg"></i>
-            <span>Welcome</span>
-          </a>
-        </li>
-        <li class="nav-item px-3 py-2 bg-dark">
-          <a href="#about" class="
-                d-flex
-                nav-link
-                link-light
-                justify-content-between
-                align-items-center
-              ">
-            <i class="fas fa-user fa-lg"></i>
-            <span>About me</span>
-          </a>
-        </li>
-        <li class="nav-item px-3 py-2 bg-dark">
-          <a href="#education" class="
-                d-flex
-                nav-link
-                link-light
-                justify-content-between
-                align-items-center
-              ">
-            <i class="fas fa-university fa-lg"></i>
-            <span>Education</span>
-          </a>
-        </li>
-        <li class="nav-item px-3 py-2 bg-dark">
-          <a href="#skills" class="
-                d-flex
-                nav-link
-                link-light
-                justify-content-between
-                align-items-center
-              ">
-            <i class="fas fa-desktop"></i>
-            <span>Skills</span>
-          </a>
-        </li>
-        <li class="nav-item px-3 py-2 bg-dark">
-          <a href="#history" class="
-                d-flex
-                nav-link
-                link-light
-                justify-content-between
-                align-items-center
-              ">
-            <i class="fas fa-briefcase"></i>
-            <span>Work History</span>
-          </a>
-        </li>
-        <li class="nav-item px-3 py-2 bg-dark">
-          <a href="#language" class="
-                d-flex
-                nav-link
-                link-light
-                justify-content-between
-                align-items-center
-              ">
-            <i class="fas fa-globe"></i>
-            <span>Language</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- Mobile menu toggle -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle menu">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="avatar-ring">
+    <img src="assets/unnamed.jpg" alt="Dave Bui" loading="eager" />
   </div>
-  <div class="justify-content-center content-wrapper m-0 content-bg">
-    <div class="
-          welcome
-          d-flex
-          flex-column
-          align-items-center
-          justify-content-center
-        " id="welcome">
-      <h1 class="text-light fw-bold">Bùi Tiến Đạt</h1>
-      <h2 class="text-light fw-bold">Kỹ sư hệ thống</h2>
-      <a href="./assets/resume.doc" download="resume.doc" class="
-            mt-3
-            d-flex
-            align-items-center
-            btn btn-danger
-            px-4
-            py-3
-            rounded-pill
-          ">
-        <i class="fas fa-download me-3"></i>
-        <span>Download CV</span>
-      </a>
-    </div>
-    <div class="bg-light flex-column main-content">
-      <ul class="" style="list-style-type: none">
-        <li class="mb-5 col-xl-8 col-12" id="about">
-          <h4 class="text-uppercase fw-bold">About me</h4>
-          <hr />
-          <div class="mb-3">
-            <div class="row col-xl-10 col-12">
-              <div class="col-xl-6 col-12 d-flex">
-                <div class="col-6">
-                  <h6 class="fw-bold">Name:</h6>
-                </div>
-                <div class="col-6">
-                  <span>Bùi Tiến Đạt</span>
-                </div>
-              </div>
-              <div class="col-xl-6 col-12 d-flex">
-                <div class="col-6">
-                  <h6 class="fw-bold">Age:</h6>
-                </div>
-                <div class="col-6">
-                  <span>25</span>
-                </div>
-              </div>
-            </div>
-            <div class="row col-xl-10 col-12">
-              <div class="col-xl-6 col-12 d-flex">
-                <div class="col-6">
-                  <h6 class="fw-bold">Birthday:</h6>
-                </div>
-                <div class="col-6">
-                  <span>22/12/1998</span>
-                </div>
-              </div>
-              <div class="col-xl-6 col-12 d-flex">
-                <div class="col-6">
-                  <h6 class="fw-bold">Location:</h6>
-                </div>
-                <div class="col-6">
-                  <span>Hà Nội</span>
-                </div>
-              </div>
-            </div>
-            <div class="row col-xl-10 col-12">
-              <div class="col-xl-6 col-12 d-flex">
-                <div class="col-6">
-                  <h6 class="fw-bold">Phone:</h6>
-                </div>
-                <div class="col-6">
-                  <span>0837525388</span>
-                </div>
-              </div>
-              <div class="col-xl-6 col-12 d-flex">
-                <div class="col-6">
-                  <h6 class="fw-bold">Email:</h6>
-                </div>
-                <div class="col-6">
-                  <span>stiendat1998@gmail.com</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <h6>
-            Mang một niềm đam mê mãnh liệt với công nghệ. Thích ứng với công
-            việc một cách nhanh chóng. Có khả năng xử lý công việc độc lập
-            cũng như phối hợp làm việc theo nhóm. Mong muốn được học hỏi và
-            thử thách bản thân trong công việc.
-          </h6>
-        </li>
-        <li class="row mb-5">
-          <div class="col-xl-6 col-12" id="education">
-            <h4 class="text-uppercase fw-bold">Education</h4>
-            <hr />
-            <ul class="row">
-              <li class="col-xl-6 col-12 mb-3">
-                <h5 class="text-blue-600 fw-bold">2016 - 2021</h5>
-                <h6 class="fw-bold">Học viện CNTT Bách Khoa</h6>
-                <span>Quản trị Hệ thống</span>
-              </li>
-              <li class="col-xl-6 col-12 mb-3">
-                <h5 class="text-blue-600 fw-bold">2021-Present</h5>
-                <h6 class="fw-bold">
-                  Học viện Công nghệ Bưu chính Viễn thông
-                </h6>
-                <span>Công nghệ thông tin - Hệ đào tạo từ xa</span>
-              </li>
-            </ul>
-          </div>
-          <div class="col-xl-6 col-12" id="skills">
-            <h4 class="text-uppercase fw-bold">Skills</h4>
-            <hr />
-            <ul class="row">
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>CSDL MySQL, Big Data</h6>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>PowerBI, Tableu, Superset</h6>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>Python, SQL, Shell</h6>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>Docker Swarm, Kubernetes</h6>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>Hortonworks HDP/HDF, Cloudera</h6>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>VMWare ESXi</h6>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>ReactJS, ExpressJS</h6>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>Java Spring Boot</h6>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h6>Kafka, RabbitMQ</h6>
-              </li>
-            </ul>
-          </div>
-        </li>
-        <li class="mb-5" id="history">
-          <h4 class="text-uppercase fw-bold">Work History</h4>
-          <hr />
-          <ul class="work-history" style="list-style-type: none">
-            <li class="mb-5">
-              <div class="mb-3">
-                <h4 class="fw-bold text-blue-600 mb-3">2022 - Hiện tại</h4>
-                <div class="d-flex mb-2 work-desc">
-                  <h5 class="fw-bold me-3 mb-0">Tournament Administrator, Junior Broadcast Innovation Developer</h5>
-                  <span>ESL FACEIT GROUP (ESL Gaming Asia)</span>
-                </div>
-              </div>
-              <ul class="mb-3">
-                <li>Lên kế hoạch, triển khai và quản lý các giải đấu trong khu vực</li>
-                <li>
-                  Xử lý các vấn đề mà các đội và tuyển thủ gặp phải trong quá trình thi đấu
-                </li>
-                <li>Viết và tổng hợp các tài liệu, báo cáo phục vụ cho việc vận hành giải đấu</li>
-                <li>Tham gia vào công tác vận hành các giải đấu online và offline</li>
-                <li>Dẫn các đoàn tuyển thủ trong nước đi tham gia các giải đấu trong hệ thống trên sân khấu ở các nước
-                  khác</li>
-                <li>Nghiên cứu, tham gia quá trình sản xuất chương trình và thử nghiệm các ý tưởng nhằm tăng chất lượng
-                  chương trình phát trực tuyến</li>
-                <li>Thiết kế, xây dựng, duy trì, tích hợp trò chơi vào chương trình hoặc xây dựng các hệ thống khác tuỳ
-                  theo dự án</li>
-              </ul>
-            </li>
-            <li class="mb-5">
-              <div class="mb-3">
-                <h4 class="fw-bold text-blue-600 mb-3">2022 - 2024</h4>
-                <div class="d-flex mb-2 work-desc">
-                  <h5 class="fw-bold me-3 mb-0">Backend Developer</h5>
-                  <span>Công ty Cổ phần đầu tư công nghệ ESPOT</span>
-                </div>
-              </div>
-              <ul class="mb-3">
-                <li>Maintain hệ thống backend cho dịch vụ</li>
-                <li>
-                  Tích hợp các công nghệ mới và bổ sung tính năng cho hệ thống
-                </li>
-                <li>Nghiên cứu phát triển và xây dựng các công cụ nội bộ phục vụ công việc hoạt động của công ty</li>
-              </ul>
-            </li>
-            <li class="mb-5">
-              <div class="mb-3">
-                <h4 class="fw-bold text-blue-600 mb-3">2021 - 2022</h4>
-                <div class="d-flex mb-2 work-desc">
-                  <h5 class="fw-bold me-3 mb-0">Data Engineer</h5>
-                  <span>Công ty Cổ phần thời trang YODY</span>
-                </div>
-              </div>
-              <ul class="mb-3">
-                <li>Tham gia xây dựng hệ thống Big Data cho dự án O2O của công ty</li>
-                <li>
-                  Xây dựng và triển khai data pipeline phục vụ yêu cầu của dự án
-                </li>
-                <li>Tối ưu hiệu năng của hệ thống</li>
-              </ul>
-            </li>
-            <li class="mb-5">
-              <div class="mb-3">
-                <h4 class="fw-bold text-blue-600 mb-3">2019 - 2021</h4>
-                <div class="d-flex mb-2 align-items-end work-desc">
-                  <h5 class="fw-bold me-3 mb-0">Kỹ sư phát triển hệ thống</h5>
-                  <span>VIVAS - Member of VNPT Technology</span>
-                </div>
-              </div>
-              <ul class="mb-3">
-                <li>
-                  Nghiên cứu, phát triển, kiểm nghiệm, đánh giá khả thi các
-                  công nghệ, giải pháp mới để sử dụng trong các sản phẩm của
-                  doanh nghiệp.
-                </li>
-                <li>
-                  Lên kế hoạch, đề xuất thiết bị, cấu hình máy chủ cho môi
-                  trường staging và production.
-                </li>
-                <li>
-                  Thiết kế, cài đặt dịch vụ, kiểm tra hệ thống. Phối hợp cùng
-                  nhóm xử lý sự cố trên môi trường production.
-                </li>
-                <li>
-                  Kiểm tra tổng thể, thực hiện unit test từng dịch vụ trước
-                  khi chuyển sản phẩm sang môi trường khác
-                </li>
-                <li>
-                  Xây dựng pipeline ETL sử dụng cho các sản phẩm Big Data của
-                  công ty
-                </li>
-                <li>
-                  Duy trì hệ thống Data Lake, Data Warehouse sử dụng
-                  Hadoop/công nghệ khác
-                </li>
-                <li>
-                  Tham gia vào quá trình xây dựng và duy trì các sản phẩm quan
-                  trọng của công ty
-                </li>
-              </ul>
-              <h6>
-                <span class="fw-bold">Reference check:</span> Anh Trần Văn Mỹ
-                - Quản lý team Big Data bộ phận R&D - Liên hệ trong CV
-              </h6>
-            </li>
-            <li class="mb-5">
-              <div class="mb-3">
-                <h4 class="fw-bold text-blue-600 mb-3">2019 - 2019</h4>
-                <div class="d-flex mb-2 work-desc">
-                  <h5 class="fw-bold me-3 mb-0">IT Helpdesk</h5>
-                  <span>Trung tâm tiếng anh Apax Leaders</span>
-                </div>
-              </div>
-              <ul class="mb-3">
-                <li>
-                  Hỗ trợ giáo viên nước ngoài, nhân viên và khách hàng về khía
-                  cạnh kĩ thuật trong quá trình hoạt động
-                </li>
-                <li>Duy trì, giám sát hệ thống IT trong trung tâm</li>
-                <li>Xây dựng, cấu hình hạ tầng IT ban đầu</li>
-                <li>Gỡ lỗi các vấn đề phát sinh trong quá trình vận hành</li>
-                <li>Quản lý thiết bị hỗ trợ giảng dạy</li>
-              </ul>
-            </li>
-            <li class="mb-5">
-              <div class="mb-3">
-                <h4 class="fw-bold text-blue-600 mb-3">2018 - 2019</h4>
-                <div class="d-flex mb-2 work-desc">
-                  <h5 class="fw-bold me-3 mb-0">System Operator</h5>
-                  <span>Công ty cổ phần truyền thông và công nghệ Comteck</span>
-                </div>
-              </div>
-              <ul class="mb-3">
-                <li>Xây dựng hạ tầng CNTT nền cho công ty</li>
-                <li>
-                  Theo dõi tình trạng hoạt động, cấu hình sao lưu định kì
-                </li>
-                <li>Xử lý các vấn đề phát sinh</li>
-                <li>Hỗ trợ các đội khác trong quá trình hoạt động</li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li class="row mb-5">
-          <div class="col-xl-6 col-12" id="language">
-            <h4 class="text-uppercase fw-bold">Language</h4>
-            <hr />
-            <ul class="row">
-              <li class="col-xl-6 col-12 mb-2">
-                <h5>Vietnamese</h5>
-              </li>
-              <li class="col-xl-6 col-12 mb-2">
-                <h5>English</h5>
-              </li>
-            </ul>
-          </div>
-        </li>
-      </ul>
-    </div>
+  <div class="sidebar-name">Bùi Tiến Đạt</div>
+  <div class="sidebar-title">Dave Bui</div>
+
+  <div class="sidebar-links">
+    <a href="https://www.linkedin.com/in/datbthnvn" target="_blank" rel="noopener" title="LinkedIn">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    </a>
+    <a href="https://github.com/stiendat" target="_blank" rel="noopener" title="GitHub">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+    </a>
+    <a href="mailto:stiendat1998@gmail.com" title="Email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+    </a>
+    <a href="tel:+84837525388" title="Phone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 011 1.23 2 2 0 012.96 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+    </a>
+    <a href="assets/resume.docx" download="Dave_Bui_Resume.docx" title="Download CV">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </a>
   </div>
+
+  <div class="sidebar-divider"></div>
+
+  <nav id="sidebar-nav">
+    <a href="#hero" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="#about">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      About
+    </a>
+    <a href="#education">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      Education
+    </a>
+    <a href="#skills">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Skills
+    </a>
+    <a href="#experience">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+      Experience
+    </a>
+    <a href="#languages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+      Languages
+    </a>
+  </nav>
+</aside>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div class="hero-tag">// Systems · Data · Backend</div>
+    <h1>Bùi Tiến Đạt<br>Dave Bui</h1>
+    <p class="hero-sub">
+      <span>Backend Engineer · Data Engineer · Technical Leader</span><br>
+      Hanoi, Vietnam
+    </p>
+    <div class="hero-btns">
+      <a href="assets/resume.docx" download="Dave_Bui_Resume.docx" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download CV
+      </a>
+      <a href="#about" class="btn btn-outline">View Profile</a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label">// 01</div>
+    <h2 class="section-title">About Me</h2>
+    <div class="about-grid">
+      <div class="about-item"><span class="lbl">Name</span><span class="val">Bùi Tiến Đạt (Dave)</span></div>
+<div class="about-item"><span class="lbl">Location</span><span class="val">Hà Nội, Vietnam</span></div>
+      <div class="about-item"><span class="lbl">Phone</span><span class="val">+84 837 525 388</span></div>
+      <div class="about-item"><span class="lbl">Email</span><span class="val">stiendat1998@gmail.com</span></div>
+      <div class="about-item"><span class="lbl">Web</span><span class="val"><a href="https://datbt.dev" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">datbt.dev</a></span></div>
+    </div>
+    <p class="about-summary">
+      A versatile and driven technology professional with extensive experience across systems engineering, data engineering, and backend development. Combines deep technical expertise with strong project management and cross-functional collaboration skills — passionate about learning and embracing new challenges.
+    </p>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <div class="section-label">// 02</div>
+    <h2 class="section-title">Education</h2>
+    <div class="edu-list">
+      <div class="edu-card">
+        <div class="edu-year">2021 – 2026</div>
+        <div class="edu-info">
+          <h4>Posts and Telecommunications Institute of Technology</h4>
+          <p>Bachelor of Information Technology</p>
+        </div>
+      </div>
+      <div class="edu-card">
+        <div class="edu-year">2016 – 2021</div>
+        <div class="edu-info">
+          <h4>BKACAD Academy of Technology</h4>
+          <p>Diploma in Network &amp; System Administration</p>
+        </div>
+      </div>
+      <div class="edu-card">
+        <div class="edu-year">2009</div>
+        <div class="edu-info">
+          <h4>SEVA SEO Training Center</h4>
+          <p>Certificate — SEO Ultimate 6</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-label">// 03</div>
+    <h2 class="section-title">Technical Skills</h2>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-title">Programming</div>
+        <div class="skill-tags">
+          <span class="tag">Python</span><span class="tag">SQL</span><span class="tag">Shell Script</span>
+          <span class="tag">JavaScript</span><span class="tag">ReactJS</span><span class="tag">ExpressJS</span>
+          <span class="tag">Java Spring Boot</span><span class="tag">Terraform</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Databases</div>
+        <div class="skill-tags">
+          <span class="tag">MySQL</span><span class="tag">Redis</span><span class="tag">ClickHouse</span>
+          <span class="tag">Apache Druid</span><span class="tag">Neo4J</span><span class="tag">GCP AlloyDB</span><span class="tag">pgvector</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Big Data</div>
+        <div class="skill-tags">
+          <span class="tag">Hortonworks HDP/HDF</span><span class="tag">Apache NiFi</span><span class="tag">Zookeeper</span>
+          <span class="tag">Spring Cloud Data Flow</span><span class="tag">Ceph</span><span class="tag">MinIO</span>
+          <span class="tag">AWS Lake Formation</span><span class="tag">AWS Glue</span><span class="tag">AWS S3</span>
+          <span class="tag">Apache Airflow / MWAA</span><span class="tag">GCP DataStream</span><span class="tag">BigQuery</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Containers &amp; Orchestration</div>
+        <div class="skill-tags">
+          <span class="tag">Docker Swarm</span><span class="tag">Kubernetes</span><span class="tag">AWS ECS</span>
+          <span class="tag">GCP Kubernetes</span><span class="tag">GCP Cloud Run</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">AI &amp; ML</div>
+        <div class="skill-tags">
+          <span class="tag">vLLM</span><span class="tag">Google ADK</span><span class="tag">GCP Vertex AI</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Event Queues &amp; Messaging</div>
+        <div class="skill-tags">
+          <span class="tag">Apache Kafka</span><span class="tag">RabbitMQ</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Analytics &amp; BI</div>
+        <div class="skill-tags">
+          <span class="tag">Power BI</span><span class="tag">Tableau</span><span class="tag">Apache Superset</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Infrastructure &amp; Virtualisation</div>
+        <div class="skill-tags">
+          <span class="tag">VMware ESXi</span><span class="tag">Proxmox</span><span class="tag">VirtualBox</span>
+          <span class="tag">Windows</span><span class="tag">Linux</span><span class="tag">macOS</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-label">// 04</div>
+    <h2 class="section-title">Work Experience</h2>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-period">04/2024 – Present</div>
+        <div class="tl-role">Backend Engineer / Technical Leader</div>
+        <div class="tl-company">SETA International</div>
+        <ul class="tl-bullets">
+          <li>Architect end-to-end system designs, translating business requirements into scalable backend services</li>
+          <li>Lead full-cycle backend development — API design, implementation, deployment, and code quality standards</li>
+          <li>Manage project planning, sprint execution, and delivery timelines; collaborate with leadership on technical roadmap</li>
+          <li>Onboard, coach, and mentor new engineers; conduct code reviews and foster continuous improvement</li>
+          <li>Act as primary technical advisor, evaluating emerging technologies and resolving complex engineering challenges</li>
+        </ul>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-period">06/2024 – Present</div>
+        <div class="tl-role">Data Engineer / Project Manager</div>
+        <div class="tl-company">BlueOC</div>
+        <ul class="tl-bullets">
+          <li>Design, build, and maintain robust ETL pipelines and data infrastructure on the Data Platform team</li>
+          <li>Architect and optimise data storage, processing, and integration layers for scalability and data quality</li>
+          <li>Own full project lifecycle — defining scope, coordinating teams, tracking milestones, reporting to leadership</li>
+          <li>Serve as primary liaison between project teams, clients, and leadership to align business and technical goals</li>
+          <li>Establish technical and strategic direction; make key architectural decisions guiding consistent outcomes</li>
+        </ul>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-period">03/2022 – 04/2024</div>
+        <div class="tl-role">Tournament Admin &amp; Junior Broadcast Innovation Developer</div>
+        <div class="tl-company">ESL FACEIT Group — ESL Gaming Asia</div>
+        <ul class="tl-bullets">
+          <li>Planned, organised, and managed game tournaments across the Asia region</li>
+          <li>Supported players/teams, served as on-site referee; compiled reports and market research</li>
+          <li>Scouted and recruited players for overseas on-stage tournaments; managed logistics and travel</li>
+          <li>Researched, designed, and integrated broadcast systems to improve TV team workflows and stream quality</li>
+          <li>Built game integrations and ancillary systems per project requirements</li>
+        </ul>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-period">05/2022 – 01/2024</div>
+        <div class="tl-role">Backend Developer</div>
+        <div class="tl-company">E-SPOT Technology Investment JSC</div>
+        <ul class="tl-bullets">
+          <li>Built and maintained backend systems supporting customer-facing and internal tools</li>
+          <li>Designed and implemented scalable APIs for frontend applications</li>
+          <li>Integrated third-party technologies including payment solutions</li>
+        </ul>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-period">12/2021 – 03/2022</div>
+        <div class="tl-role">Data Engineer</div>
+        <div class="tl-company">YODY Fashion JSC</div>
+        <ul class="tl-bullets">
+          <li>Designed and implemented scalable data pipelines for B2B, B2C, and O2O projects</li>
+          <li>Collaborated with cross-functional teams to identify and resolve complex data problems</li>
+          <li>Optimised data processing for performance and scalability; monitored pipeline stability</li>
+        </ul>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-period">07/2019 – 08/2021</div>
+        <div class="tl-role">System Engineer</div>
+        <div class="tl-company">VIVAS / VNPT Technology</div>
+        <ul class="tl-bullets">
+          <li>Researched and evaluated new technologies and open-source solutions for production use</li>
+          <li>Planned server sizing for staging and production environments; designed and configured services</li>
+          <li>Built ETL pipelines for Big Data products; maintained Hadoop-based Data Lake and Data Warehouse</li>
+          <li>Contributed to several high-impact company products; coordinated system stability tests</li>
+        </ul>
+        <div class="tl-ref">Reference: Mr. Tran Van My — Big Data Team Manager, R&amp;D | +84 973 925 062</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-period">03/2019 – 07/2019</div>
+        <div class="tl-role">IT Helpdesk</div>
+        <div class="tl-company">Apax Leaders English Teaching Center</div>
+        <ul class="tl-bullets">
+          <li>Supported foreign teachers, staff, and customers on company technology</li>
+          <li>Maintained and monitored network, CCTV, VoIP, PCs, and educational equipment</li>
+          <li>Configured CCTV, VoIP, Mesh Wi-Fi, and VLAN infrastructure</li>
+        </ul>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-period">12/2018 – 03/2019</div>
+        <div class="tl-role">System Operator</div>
+        <div class="tl-company">Comteck JSC</div>
+        <ul class="tl-bullets">
+          <li>Built core infrastructure for web, mail, and storage services</li>
+          <li>Monitored system health, managed backups, and provided cross-team technical support</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LANGUAGES -->
+  <section id="languages">
+    <div class="section-label">// 05</div>
+    <h2 class="section-title">Languages</h2>
+    <div class="lang-list">
+      <div class="lang-card">
+        <div class="lang-flag" style="font-family:sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:0.05em;line-height:2rem;">VN</div>
+        <div class="lang-name">Vietnamese</div>
+        <div class="lang-level">Native</div>
+      </div>
+      <div class="lang-card">
+        <div class="lang-flag" style="font-family:sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:0.05em;line-height:2rem;">EN</div>
+        <div class="lang-name">English</div>
+        <div class="lang-level">Professional</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ── Animated particle background ──
+  (function() {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [], lines = [];
+    const N = 60;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    for (let i = 0; i < N; i++) {
+      particles.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (let i = 0; i < N; i++) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,212,255,0.6)';
+        ctx.fill();
+        for (let j = i + 1; j < N; j++) {
+          const q = particles[j];
+          const d = Math.hypot(p.x - q.x, p.y - q.y);
+          if (d < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = `rgba(0,212,255,${(1 - d / 120) * 0.2})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  // ── Timeline scroll-in animations ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.tl-item').forEach((el, i) => {
+    el.style.transitionDelay = (i % 4) * 0.08 + 's';
+    observer.observe(el);
+  });
+
+  // ── Active nav link on scroll ──
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('#sidebar-nav a');
+
+  function updateActiveNav() {
+    let current = sections[0].id;
+    const scrollY = window.scrollY + window.innerHeight * 0.35;
+    sections.forEach(s => {
+      if (s.offsetTop <= scrollY) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+  updateActiveNav();
+
+  // ── Close mobile sidebar on nav click ──
+  navLinks.forEach(a => a.addEventListener('click', () => {
+    document.querySelector('.sidebar').classList.remove('open');
+  }));
+</script>
 </body>
-
 </html>
