@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no" />
   <title>Dave Bui — Portfolio</title>
   <style>
     :root {
@@ -376,6 +377,9 @@
       color: var(--accent);
       font-weight: 700;
       margin-bottom: 0.3rem;
+      pointer-events: none;
+      user-select: text;
+      -webkit-user-select: text;
     }
     .tl-role { font-size: 1rem; font-weight: 700; margin-bottom: 0.15rem; }
     .tl-company { font-size: 0.82rem; color: var(--accent2); margin-bottom: 0.75rem; font-weight: 500; }
