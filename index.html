@@ -430,25 +430,79 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       :root { --sidebar-w: 0px; }
-      .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
-      .sidebar.open { transform: translateX(0); --sidebar-w: 260px; }
+
+      /* Sidebar slides in as overlay */
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: 260px;
+        overflow-y: auto;
+      }
+      .sidebar.open { transform: translateX(0); }
+
+      /* Dim overlay behind open sidebar */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 99;
+      }
+      .sidebar-overlay.open { display: block; }
+
+      /* Hamburger button */
       .mobile-menu-btn {
         display: flex;
+        align-items: center;
+        justify-content: center;
         position: fixed;
         top: 1rem; left: 1rem;
         z-index: 200;
-        background: var(--card);
+        background: rgba(5,10,20,0.9);
         border: 1px solid var(--border);
         border-radius: 8px;
-        padding: 0.5rem;
+        padding: 0.55rem;
         cursor: pointer;
         color: var(--text);
+        backdrop-filter: blur(8px);
       }
-      .hero, section { padding: 3rem 1.5rem; }
-      .about-grid { grid-template-columns: 1fr; }
+
+      /* Main content full width */
+      .main { margin-left: 0; }
+
+      /* Sections */
+      .hero { padding: 5rem 1.25rem 3rem; }
+      section { padding: 3rem 1.25rem; }
+
+      /* Hero text */
+      .hero h1 { font-size: 2.2rem; }
+      .hero-sub { font-size: 0.95rem; }
+      .hero-btns { flex-direction: column; align-items: flex-start; }
+
+      /* About */
+      .about-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+
+      /* Education cards */
+      .edu-card { flex-direction: column; gap: 0.4rem; }
+      .edu-year { min-width: unset; }
+
+      /* Timeline */
+      .timeline::before { left: 6px; }
+      .tl-item { padding-left: 1.5rem; }
+      .tl-item::before { left: 0; }
+
+      /* Skills */
+      .skill-tags { gap: 0.4rem; }
+      .tag { font-size: 0.74rem; padding: 0.25rem 0.6rem; }
+
+      /* Language */
+      .lang-list { gap: 1rem; }
+      .lang-card { padding: 1rem 1.5rem; min-width: 110px; }
     }
+
     @media (min-width: 901px) {
       .mobile-menu-btn { display: none; }
+      .sidebar-overlay { display: none !important; }
     }
   </style>
 </head>
@@ -457,9 +511,12 @@
 <canvas id="bg-canvas"></canvas>
 
 <!-- Mobile menu toggle -->
-<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle menu">
+<button class="mobile-menu-btn" id="menu-btn" aria-label="Toggle menu">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
+
+<!-- Overlay to close sidebar on tap outside -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 
 <!-- ── SIDEBAR ── -->
 <aside class="sidebar">
@@ -849,10 +906,17 @@
   window.addEventListener('scroll', updateActiveNav, { passive: true });
   updateActiveNav();
 
-  // ── Close mobile sidebar on nav click ──
-  navLinks.forEach(a => a.addEventListener('click', () => {
-    document.querySelector('.sidebar').classList.remove('open');
-  }));
+  // ── Mobile sidebar toggle ──
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const menuBtn = document.getElementById('menu-btn');
+
+  function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('open'); }
+  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+
+  menuBtn.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+  overlay.addEventListener('click', closeSidebar);
+  navLinks.forEach(a => a.addEventListener('click', closeSidebar));
 </script>
 </body>
 </html>
